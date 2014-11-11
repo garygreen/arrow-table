@@ -157,6 +157,8 @@
 
 	$.fn.arrowTable = function(options) {
 
+		options = options || {};
+
 		return $(this).each(function() {
 
 			var namespace = options.namespace || ArrowTable.prototype.defaults.namespace;

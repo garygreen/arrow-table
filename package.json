@@ -1,6 +1,6 @@
 {
   "name": "arrow-table",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Navigate HTML tables with arrow keys.",
   "author": "Gary Green",
   "main": "arrow-table.js",
