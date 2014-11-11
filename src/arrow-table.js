@@ -1,0 +1,203 @@
+/*
+ *  Copyright 2014 Gary Green.
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+(function(window, $) {
+
+	function ArrowTable(table, options) {
+
+		this.init(table, options);
+
+	};
+
+	ArrowTable.prototype = {
+
+		defaults: {
+			namespace: 'arrowtable', // Namespace for the keybinding, etc
+			beforeMove: $.noop,      // Function to call before navigating
+			afterMove: $.noop,       // Function to call after navigating
+			listenTarget: 'input',   // Listen for move/key events from this target
+			focusTarget: 'input',    // Focus this target after the move has completed
+			enabledKeys: ['left', 'right', 'up', 'down'] // Key's enabled
+		},
+
+		KEYS: {
+			37: 'left',
+			39: 'right',
+			38: 'up',
+			40: 'down'
+		},
+
+		/**
+		 * Initialise the plugin
+		 * @param  {element} table   Table element
+		 * @param  {object} options  Custom plugin options
+		 * @return {void}
+		 */
+		init: function(table, options) {
+			
+			this.options = $.extend({}, this.defaults, options);
+			this.$table = $(table);
+
+			// Bind main plugin events
+			this.bindEvents();
+		},
+
+		findMoveTarget: function(direction, $element) {
+
+			var $target;
+
+			// Get the move to td container
+			switch (direction)
+			{
+				case 'right':
+					$target = $element.closest('td').next();
+					break;
+
+				case 'left':
+					$target = $element.closest('td').prev();
+					break;
+
+				case 'down':
+					$target = $element.closest('tr').next().find('td:eq(' + $element.closest('td').index() + ')');
+					break;
+
+				case 'up':
+					$target = $element.closest('tr').prev().find('td:eq(' + $element.closest('td').index() + ')');
+					break;
+			}
+
+			return $target;
+		},
+
+		/**
+		 * Handle moving from one td to another and focussing the target
+		 * @param  {window.event} event
+		 * @return {void}
+		 */
+		move: function(event) {
+
+			var keyString = this.KEYS[event.which], $this = $(event.target), $target;
+
+			// Check the key is enabled
+			if ($.inArray(keyString, this.options.enabledKeys) === -1)
+			{
+				return;
+			}
+
+			var findMoveTarget = $.proxy(function() {
+				return this.findMoveTarget(keyString, $this);
+			}, this);
+
+			// Allow move to not happen if beforeMove function returns 'false'
+			var move = this.options.beforeMove($this[0], findMoveTarget, keyString);
+			if (move === false)
+			{
+				return;
+			}
+
+			var $target = findMoveTarget();
+
+			if ($target.length)
+			{
+				// Focus the target
+				this.focusTarget($target);
+
+				// Let the afterMove callback know we're finished
+				this.options.afterMove($this[0], $target[0], keyString);
+			}
+		},
+
+		/**
+		 * Focus the input target
+		 * @param  {jQuery} $target
+		 * @return {void}
+		 */
+		focusTarget: function($target) {
+			$target.find(this.options.focusTarget).focus();
+		},
+
+		/**
+		 * Bind main plugin events
+		 * @return {void}
+		 */
+		bindEvents: function() {
+			this.$table.on('keyup.' + this.namespace, this.options.listenTarget, $.proxy(this.move, this));
+		},
+
+		/**
+		 * Unbind main plugin events
+		 * @return {void}
+		 */
+		unbindEvents: function() {
+			this.$table.off('keyup.' + this.namespace, this.options.listenTarget, $.proxy(this.move, this));
+		},
+
+		/**
+		 * Destroy the plugin
+		 * @return {self}
+		 */
+		destroy: function() {
+			this.unbindEvents();
+			return this;
+		}
+
+	};
+
+	$.fn.arrowTable = function(options) {
+
+		return $(this).each(function() {
+
+			var namespace = options.namespace || ArrowTable.prototype.defaults.namespace;
+				isMethodCall = typeof options === 'string',
+				$this = $(this);
+
+			// Get plugin instance
+			var arrowTable = $this.data(namespace);
+
+			if (isMethodCall)
+			{
+				if (!arrowTable) return this;
+
+				switch (options)
+				{
+					case 'destroy':
+						arrowTable.destroy();
+						$this.removeData(namespace);
+						break;
+
+				}
+
+				return this;
+			}
+
+			// Initialise?
+			if (arrowTable === undefined)
+			{
+				arrowTable = new ArrowTable(this, options);
+				$this.data(namespace, arrowTable);
+			}
+			else
+			{
+				// Reinitialise arrowTable
+				arrowTable.destroy().init(this, options);
+			}
+
+			return this;
+
+		});
+
+	};
+
+})(window, jQuery);
