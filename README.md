@@ -60,6 +60,7 @@ Option          | Default                           | Description
 enabledKeys     | `['left', 'right', 'up', 'down']` | Enabled keys
 listenTarget    | `'input'`                         | Target to listen for key move events
 focusTarget     | `'input'`                         | Target to focus after move
+continuousDelay | `50`                              | Delay in ms before moving onto next cell when holding arrow keys down
 beforeMove      | `$.noop`                          | Before moving callback. Return `false` to stop move
 afterMove       | `$.noop`                          | After moving complete callback.
 

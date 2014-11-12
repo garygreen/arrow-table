@@ -29,7 +29,8 @@
 			afterMove: $.noop,       // Function to call after navigating
 			listenTarget: 'input',   // Listen for move/key events from this target
 			focusTarget: 'input',    // Focus this target after the move has completed
-			enabledKeys: ['left', 'right', 'up', 'down'] // Key's enabled
+			enabledKeys: ['left', 'right', 'up', 'down'], // Key's enabled
+			continuousDelay: 50      // Delay in milliseconds for continuous movement when holding down arrow keys
 		},
 
 		KEYS: {
@@ -88,7 +89,7 @@
 		 */
 		move: function(event) {
 
-			var keyString = this.KEYS[event.which], $this = $(event.target), $target;
+			var keyString = this.KEYS[event.which], $this = $(event.target);
 
 			// Check the key is enabled
 			if ($.inArray(keyString, this.options.enabledKeys) === -1)
@@ -133,7 +134,32 @@
 		 * @return {void}
 		 */
 		bindEvents: function() {
-			this.$table.on('keyup.' + this.namespace, this.options.listenTarget, $.proxy(this.move, this));
+			var	moveTimer;
+
+			var moveEvent = function(event) {
+
+				if (this.options.continuousDelay > 0)
+				{
+					if (moveTimer)
+					{
+						return false;
+					}
+
+					moveTimer = setTimeout(function() {
+						moveTimer = null;
+					}, this.options.continuousDelay);
+				}
+
+				this.move(event);
+			};
+
+			var keyup = function() {
+				moveTimer = null;
+			};
+
+			this.$table
+				.on('keydown.' + this.options.namespace, this.options.listenTarget, $.proxy(moveEvent, this))
+				.on('keyup.' + this.options.namespace, this.options.listenTarget, keyup);
 		},
 
 		/**
@@ -141,7 +167,7 @@
 		 * @return {void}
 		 */
 		unbindEvents: function() {
-			this.$table.off('keyup.' + this.namespace, this.options.listenTarget, $.proxy(this.move, this));
+			this.$table.off('.' + this.options.namespace);
 		},
 
 		/**
@@ -156,14 +182,15 @@
 	};
 
 	$.fn.arrowTable = function(options) {
-
+		
 		options = options || {};
+
+		var namespace = options.namespace || ArrowTable.prototype.defaults.namespace,
+			isMethodCall = typeof options === 'string';
 
 		return $(this).each(function() {
 
-			var namespace = options.namespace || ArrowTable.prototype.defaults.namespace;
-				isMethodCall = typeof options === 'string',
-				$this = $(this);
+			var $this = $(this);
 
 			// Get plugin instance
 			var arrowTable = $this.data(namespace);
