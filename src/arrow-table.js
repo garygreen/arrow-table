@@ -84,25 +84,20 @@
 
 		/**
 		 * Handle moving from one td to another and focussing the target
-		 * @param  {window.event} event
+		 * @param  {DOMElement} Current dom element 
+		 * @param  {string} Direction to move
 		 * @return {void}
 		 */
-		move: function(event) {
+		move: function(element, direction) {
 
-			var keyString = this.KEYS[event.which], $this = $(event.target);
-
-			// Check the key is enabled
-			if ($.inArray(keyString, this.options.enabledKeys) === -1)
-			{
-				return;
-			}
+			var $this = $(element);
 
 			var findMoveTarget = $.proxy(function() {
-				return this.findMoveTarget(keyString, $this);
+				return this.findMoveTarget(direction, $this);
 			}, this);
 
 			// Allow move to not happen if beforeMove function returns 'false'
-			var move = this.options.beforeMove($this[0], findMoveTarget, keyString);
+			var move = this.options.beforeMove($this[0], findMoveTarget, direction);
 			if (move === false)
 			{
 				return;
@@ -116,7 +111,7 @@
 				this.focusTarget($target);
 
 				// Let the afterMove callback know we're finished
-				this.options.afterMove($this[0], $target[0], keyString);
+				this.options.afterMove($this[0], $target[0], direction);
 			}
 		},
 
@@ -138,11 +133,19 @@
 
 			var moveEvent = function(event) {
 
+				var direction = this.KEYS[event.which];
+
+				// Check the key/direction is enabled
+				if ($.inArray(direction, this.options.enabledKeys) === -1)
+				{
+					return;
+				}
+
 				if (this.options.continuousDelay > 0)
 				{
 					if (moveTimer)
 					{
-						return false;
+						return;
 					}
 
 					moveTimer = setTimeout(function() {
@@ -150,7 +153,7 @@
 					}, this.options.continuousDelay);
 				}
 
-				this.move(event);
+				this.move(event.target, direction);
 			};
 
 			var keyup = function() {
