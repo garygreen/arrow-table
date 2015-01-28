@@ -2,6 +2,8 @@
 
 Navigate HTML tables with arrow keys.
 
+[Arrow Table](http://i.imgur.com/qwlJtWZ.gifv)
+
 ## Usage
 
 ```javascript
