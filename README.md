@@ -2,7 +2,7 @@
 
 Navigate HTML tables with arrow keys.
 
-[Arrow Table](http://i.imgur.com/qwlJtWZ.gif)
+![demo](resources/demo.gif)
 
 ## Usage
 
