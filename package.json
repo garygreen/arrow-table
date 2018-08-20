@@ -5,7 +5,7 @@
   "author": "Gary Green",
   "main": "arrow-table.js",
   "scripts": {
-    "build": "rollup src/arrow-table.js -o dist/arrow-table.js --format iife",
+    "build": "rollup src/arrow-table.js -o dist/arrow-table.js --format iife --name ArrowTable --globals jquery:jQuery",
     "dist": "npm run build && uglifyjs dist/arrow-table.js -o dist/arrow-table.min.js"
   },
   "dependencies": {},
