@@ -1,26 +1,28 @@
-/*
- *  Copyright 2014 Gary Green.
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+var ArrowTable = (function ($) {
+	'use strict';
 
-(function(window, $) {
+	$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+
+	/*
+	 *  Copyright 2014 Gary Green.
+	 *  Licensed under the Apache License, Version 2.0 (the "License");
+	 *  you may not use this file except in compliance with the License.
+	 *  You may obtain a copy of the License at
+	 *
+	 *  http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 *  Unless required by applicable law or agreed to in writing, software
+	 *  distributed under the License is distributed on an "AS IS" BASIS,
+	 *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 *  See the License for the specific language governing permissions and
+	 *  limitations under the License.
+	 */
 
 	function ArrowTable(table, options) {
 
 		this.init(table, options);
 
-	};
-
+	}
 	ArrowTable.prototype = {
 
 		defaults: {
@@ -153,6 +155,7 @@
 					}, this.options.continuousDelay);
 				}
 
+				event.preventDefault();
 				this.move(event.target, direction);
 			};
 
@@ -232,4 +235,6 @@
 
 	};
 
-})(window, jQuery);
+	return ArrowTable;
+
+}(jQuery));
