@@ -153,6 +153,7 @@
 					}, this.options.continuousDelay);
 				}
 
+				event.preventDefault();
 				this.move(event.target, direction);
 			};
 
