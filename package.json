@@ -4,12 +4,13 @@
   "description": "Navigate HTML tables with arrow keys.",
   "author": "Gary Green",
   "main": "arrow-table.js",
+  "scripts": {
+    "build": "rollup src/arrow-table.js -o dist/arrow-table.js --format iife",
+    "dist": "npm run build && uglifyjs dist/arrow-table.js -o dist/arrow-table.min.js"
+  },
   "dependencies": {},
   "devDependencies": {
-    "gulp": "^3.8.5",
-    "gulp-clean": "^0.3.1",
-    "gulp-concat": "^2.2.0",
-    "gulp-header": "^1.0.5",
-    "gulp-uglify": "^0.3.1"
+    "rollup": "^0.64.1",
+    "uglify-js": "^3.4.7"
   }
 }
